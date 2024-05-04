@@ -7,6 +7,7 @@ import dbConnection from '../data/mongo-db';
 import envs from '../config/envs';
 import { Development } from '../development';
 import { HttpsOptions, Options } from '../utils/interfaces';
+import cors from 'cors';
 
 export class Server {
   private app = express();
@@ -33,6 +34,9 @@ export class Server {
 
     //* For development purposes
     if (!envs.PROD) this.app.use(Development.dev);
+
+    // CORS
+    this.app.use(cors({ origin: '*' }));
 
     this.app.use(cookieParser(process.env.SECRET_KEY));
 
