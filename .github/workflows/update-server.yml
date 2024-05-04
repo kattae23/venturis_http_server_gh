@@ -23,8 +23,8 @@ jobs:
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
         script: |
-          cd /var/www/danny_bot
+          cd /var/www/venturis
           git pull origin dev_alfonzo
           pnpm install
           pnpm build
-          pm2 restart danny_bot --update-env
+          pm2 restart venturis --update-env
