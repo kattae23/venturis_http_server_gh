@@ -4,7 +4,7 @@ name: Deploy
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ main ]
+    branches: [ dev_alfonzo ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -24,7 +24,7 @@ jobs:
         port: ${{ secrets.PORT }}
         script: |
           cd /var/www/danny_bot
-          git pull origin main
+          git pull origin dev_alfonzo
           pnpm install
           pnpm build
           pm2 restart danny_bot --update-env
