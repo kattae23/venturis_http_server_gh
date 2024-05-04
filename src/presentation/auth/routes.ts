@@ -18,7 +18,7 @@ export class AuthRoutes {
 
   static async login(router: Router, options: SessionOptions) {
     router.post(
-      '/',
+      '/login',
       validate(login),
       passport.authenticate('login', options),
       AuthController.login,
@@ -30,7 +30,7 @@ export class AuthRoutes {
 
   static async register(router: Router, options: SessionOptions) {
     router.post(
-      '/',
+      '/register',
       validate(register),
       passport.authenticate('register', options),
       AuthController.register,

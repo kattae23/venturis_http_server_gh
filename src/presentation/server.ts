@@ -1,8 +1,7 @@
 import cookieParser from 'cookie-parser';
 import 'dotenv/config';
-import express, { Router, Express } from 'express';
+import express, { Router } from 'express';
 import path from 'path';
-import https from 'https';
 import dbConnection from '../data/mongo-db';
 import envs from '../config/envs';
 import { Development } from '../development';
@@ -54,20 +53,14 @@ export class Server {
       res.sendFile(indexPath);
     });
 
-    this.httpServer((this.httpsOptions as HttpsOptions) || {}, this.app);
+    await this.dbConnection();
+
+    this.app.listen(this.port, () => {
+      console.log(`Server running on port ${this.port}`);
+    });
   }
 
-  async httpServer(httpsOptions: HttpsOptions, server: Express) {
-    const httpServer = https.createServer(httpsOptions, server);
-    this.listen(httpServer);
-  }
-
-  ready() {
-    dbConnection();
-    console.log(`- HTTPS Server running - port: ${this.port}`);
-  }
-
-  listen(server: https.Server) {
-    server.listen(this.port, '0.0.0.0', () => this.ready());
+  async dbConnection() {
+    await dbConnection();
   }
 }

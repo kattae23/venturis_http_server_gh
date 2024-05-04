@@ -4,7 +4,7 @@ import envs from '../../config/envs';
 const dbConnection = async () => {
   try {
     await mongoose.connect(envs.MONGO_URL, {
-      ssl: false,
+      ssl: true,
     });
     console.log('- Connected to the database adventure (MongoDB)');
   } catch (error) {
