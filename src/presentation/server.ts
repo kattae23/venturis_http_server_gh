@@ -8,6 +8,7 @@ import envs from '../config/envs';
 import { Development } from '../development';
 import { HttpsOptions, Options } from '../utils/interfaces';
 import cors from 'cors';
+import morgan from 'morgan';
 
 export class Server {
   private app = express();
@@ -37,6 +38,8 @@ export class Server {
 
     // CORS
     this.app.use(cors({ origin: '*' }));
+
+    this.app.use(morgan('dev'));
 
     this.app.use(cookieParser(process.env.SECRET_KEY));
 
