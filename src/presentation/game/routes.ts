@@ -8,10 +8,11 @@ export class GameRoutes {
   static get routes(): Router {
     const router = Router();
 
-    router.get('get_character', [isUserMid], GameController.getCharacter);
-    router.post(
-      'update_character',
-      [validate(updateUser), isUserMid],
+    router.get('/get_character', [isUserMid], GameController.getCharacter);
+
+    router.patch(
+      '/update_character',
+      [isUserMid, validate(updateUser)],
       GameController.updateUser,
     );
 

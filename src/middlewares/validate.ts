@@ -15,12 +15,11 @@ const validate =
       .validate(object);
 
     if (error) {
-      const errorMessage = error.details
-        .map((details) => details.message)
-        .join(', ');
-      return next(
-        new ApiError(httpStatus.BAD_REQUEST, false, value, errorMessage),
-      );
+      const errorMessage = error.details.map((details) => details.message);
+
+      return req.res
+        ?.status(400)
+        .json(new ApiError(httpStatus.BAD_REQUEST, errorMessage));
     }
     Object.assign(req, value);
     return next();

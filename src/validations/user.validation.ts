@@ -7,6 +7,7 @@ export const createUser = {
     email: Joi.string().required().email(),
     password: Joi.string().required().custom(password),
     role: Joi.number().required(),
+    credits: Joi.string(),
     character: Joi.string().required(),
   }),
 };

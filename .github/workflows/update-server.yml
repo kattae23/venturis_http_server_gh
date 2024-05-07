@@ -4,7 +4,7 @@ name: Deploy
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ dev_alfonzo ]
+    branches: [ main ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -24,7 +24,7 @@ jobs:
         port: ${{ secrets.PORT }}
         script: |
           cd /var/www/venturis
-          git pull origin dev_alfonzo
+          git pull origin main
           pnpm install
           pnpm build
           pm2 restart venturis --update-env

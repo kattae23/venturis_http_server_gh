@@ -1,9 +1,17 @@
-import { Request, Response, Router } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import passport from '../../middlewares/passport.mid';
-import { ErrorType, SessionOptions } from '../../utils/interfaces';
+import {
+  ErrorType,
+  PayloadToken,
+  RequestType,
+  SessionOptions,
+  UserInterface,
+} from '../../utils/interfaces';
 import validate from '../../middlewares/validate';
 import { login, register } from '../../validations/auth.validation';
 import { AuthController } from './controller';
+import isUserMid from '../../middlewares/isUser.mid';
+import { createToken } from '../../utils/token.util';
 
 export class AuthRoutes {
   static get routes(): Router {
@@ -12,6 +20,7 @@ export class AuthRoutes {
 
     this.login(router, options);
     this.register(router, options);
+    this.verifyToken(router);
 
     return router;
   }
@@ -20,7 +29,40 @@ export class AuthRoutes {
     router.post(
       '/login',
       validate(login),
-      passport.authenticate('login', options),
+      async (req: RequestType, res: Response, next: NextFunction) => {
+        try {
+          passport.authenticate(
+            'login',
+            options,
+            (
+              err: Error,
+              user: UserInterface | false,
+              info: { message: string },
+            ) => {
+              if (err) {
+                return next(err);
+              }
+              if (!user) {
+                return res.status(401).json({ message: info.message });
+              }
+
+              const payload: PayloadToken = {
+                username: user.username,
+                role: user.role,
+              };
+              const token = createToken(payload);
+
+              req.token = token;
+
+              req.user = user;
+
+              next();
+            },
+          )(req, res, next);
+        } catch (error) {
+          return next(error);
+        }
+      },
       AuthController.login,
       this.errorHandler,
     );
@@ -31,8 +73,42 @@ export class AuthRoutes {
   static async register(router: Router, options: SessionOptions) {
     router.post(
       '/register',
-      validate(register),
-      passport.authenticate('register', options),
+      [
+        validate(register),
+        async (req: RequestType, res: Response, next: NextFunction) => {
+          try {
+            passport.authenticate(
+              'register',
+              options,
+              (
+                err: Error,
+                user: UserInterface | false,
+                info: { message: string },
+              ) => {
+                if (err) {
+                  return next(err);
+                }
+                if (!user) {
+                  return res.status(401).json({ message: info.message });
+                }
+
+                const payload: PayloadToken = {
+                  username: user.username,
+                  role: user.role,
+                };
+                const token = createToken(payload);
+
+                req.token = token;
+
+                req.user = user;
+                next();
+              },
+            )(req, res, next);
+          } catch (error) {
+            return next(error);
+          }
+        },
+      ],
       AuthController.register,
       this.errorHandler,
     );
@@ -40,11 +116,10 @@ export class AuthRoutes {
     return router;
   }
 
-  static async verifyToken(router: Router, options: SessionOptions) {
+  static async verifyToken(router: Router) {
     router.get(
-      '/',
-      validate(register),
-      passport.authenticate('register', options),
+      '/verify',
+      [isUserMid],
       AuthController.verify,
       this.errorHandler,
     );
@@ -53,7 +128,6 @@ export class AuthRoutes {
   }
 
   static errorHandler(error: ErrorType, req: Request, res: Response) {
-    console.log('Error en el middleware de manejo de errores:', error);
     return res.status(error.statusCode || 400).json({
       statusCode: error.statusCode || 400,
       message: error.message,

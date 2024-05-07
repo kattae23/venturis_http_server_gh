@@ -1,14 +1,15 @@
-class ApiError extends Error {
-  private readonly statusCode: number;
-  private readonly isOperational: boolean;
+class ApiError {
+  readonly statusCode: number;
+  readonly isOperational?: boolean;
   readonly stack?: string | undefined;
+  readonly message?: string | string[];
   constructor(
     statusCode: number,
+    message = [''],
     isOperational = true,
     stack = '',
-    message = '',
   ) {
-    super(message);
+    this.message = message;
     this.statusCode = statusCode;
     this.isOperational = isOperational;
     if (stack) {
@@ -20,5 +21,3 @@ class ApiError extends Error {
 }
 
 export default ApiError;
-
-module.exports = ApiError;

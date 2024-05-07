@@ -5,7 +5,7 @@ import { verifytoken } from '../utils/token.util';
 export default (req: RequestType, _res: Response, next: NextFunction) => {
   try {
     const token = req.cookies.token;
-    const data = verifytoken(token);
+    const data = verifytoken(token, _res);
     const { role } = data;
     if (role === 0) {
       return next();

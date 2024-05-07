@@ -1,6 +1,7 @@
 import { Router, Request } from 'express';
 import { Schema } from 'joi';
 import { JwtPayload } from 'jsonwebtoken';
+import { Document } from 'mongoose';
 
 export interface PayloadToken {
   username: string;
@@ -43,3 +44,29 @@ export interface ValidSchema {
 }
 
 export type RequestWithValidation = Request & { [key: string]: any };
+
+export type UserInterface = Document<
+  unknown,
+  object,
+  {
+    createdAt: NativeDate;
+    updatedAt: NativeDate;
+  } & {
+    username: string;
+    email: string;
+    password: string;
+    character: string;
+    role: number;
+    credits: number;
+  }
+> & {
+  createdAt: NativeDate;
+  updatedAt: NativeDate;
+} & {
+  username: string;
+  email: string;
+  password: string;
+  character: string;
+  role: number;
+  credits: number;
+};
